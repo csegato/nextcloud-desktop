@@ -247,7 +247,10 @@ bool AccountManager::restoreFromLegacySettings()
         for (const auto &accountId : childGroups) {
             settings->beginGroup(accountId);
             if (const auto acc = loadAccountHelper(*settings)) {
-                addAccount(acc);
+                const auto accountState = addAccount(acc);
+//                if (!accountState->isConnected()) {
+//                    accountState->freshConnectionAttempt();
+//                }
                 QMessageBox::information(nullptr,
                                          tr("Legacy import"),
                                          tr("Successfully imported account from legacy client: %1").arg(acc->prettyName()));
@@ -371,10 +374,11 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     const auto acc = createAccount();
 
     auto authType = settings.value(QLatin1String(authTypeC)).toString();
+    qDebug() << ">> authType" << authType;
 
     // There was an account-type saving bug when 'skip folder config' was used
     // See owncloud#5408. This attempts to fix up the "dummy" authType
-    if (authType == QLatin1String(dummyAuthTypeC)) {
+    if (authType == QLatin1String(dummyAuthTypeC) || authType.isEmpty()) {
         if (settings.contains(QLatin1String(httpUserC))) {
             authType = httpAuthTypeC;
         } else if (settings.contains(QLatin1String(shibbolethUserC))) {
@@ -395,20 +399,20 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
         acc->setUrl(urlConfig.toUrl());
     }
 
-    // Migrate to webflow
-    if (authType == QLatin1String(httpAuthTypeC)) {
-        authType = webflowAuthTypeC;
-        settings.setValue(QLatin1String(authTypeC), authType);
+    // Migrate to webflow - why?
+//    if (authType == QLatin1String(httpAuthTypeC)) {
+//        authType = webflowAuthTypeC;
+//        settings.setValue(QLatin1String(authTypeC), authType);
 
-        const auto settingsChildKeys = settings.childKeys();
-        for (const auto &key : settingsChildKeys) {
-            if (!key.startsWith(httpAuthPrefix))
-                continue;
-            const auto newkey = QString::fromLatin1(webflowAuthPrefix).append(key.mid(5));
-            settings.setValue(newkey, settings.value((key)));
-            settings.remove(key);
-        }
-    }
+//        const auto settingsChildKeys = settings.childKeys();
+//        for (const auto &key : settingsChildKeys) {
+//            if (!key.startsWith(httpAuthPrefix))
+//                continue;
+//            const auto newkey = QString::fromLatin1(webflowAuthPrefix).append(key.mid(5));
+//            settings.setValue(newkey, settings.value((key)));
+//            settings.remove(key);
+//        }
+//    }
 
     qCInfo(lcAccountManager) << "Account for" << acc->url() << "using auth type" << authType;
 

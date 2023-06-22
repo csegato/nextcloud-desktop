@@ -1271,6 +1271,8 @@ void AccountSettings::slotAccountStateChanged()
         // ownCloud is not yet configured.
         showConnectionLabel(tr("No %1 connection configured.")
                                 .arg(Utility::escape(Theme::instance()->appNameGUI())));
+        // try to login
+        _accountState->handleInvalidCredentials();
     }
 
     /* Allow to expand the item if the account is connected. */
