@@ -329,6 +329,7 @@ void AccountManager::saveAccountHelper(Account *acc, QSettings &settings, bool s
 
         // HACK: Save http_user also as user
         if (acc->_settingsMap.contains(httpUserC))
+            //acc->davUser();
             settings.setValue(userC, acc->_settingsMap.value(httpUserC));
     }
 
@@ -372,7 +373,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     auto authType = settings.value(QLatin1String(authTypeC)).toString();
 
     // There was an account-type saving bug when 'skip folder config' was used
-    // See #5408. This attempts to fix up the "dummy" authType
+    // See owncloud#5408. This attempts to fix up the "dummy" authType
     if (authType == QLatin1String(dummyAuthTypeC)) {
         if (settings.contains(QLatin1String(httpUserC))) {
             authType = httpAuthTypeC;
