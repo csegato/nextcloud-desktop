@@ -186,6 +186,7 @@ GeneralSettings::GeneralSettings(QWidget *parent)
     connect(_ui->crashreporterCheckBox, &QAbstractButton::toggled, this, &GeneralSettings::saveMiscSettings);
     connect(_ui->newFolderLimitCheckBox, &QAbstractButton::toggled, this, &GeneralSettings::saveMiscSettings);
     connect(_ui->newFolderLimitSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &GeneralSettings::saveMiscSettings);
+    connect(_ui->existingFolderLimitCheckBox, &QAbstractButton::toggled, this, &GeneralSettings::saveMiscSettings);
     connect(_ui->newExternalStorage, &QAbstractButton::toggled, this, &GeneralSettings::saveMiscSettings);
 
 #ifndef WITH_CRASHREPORTER
@@ -255,6 +256,8 @@ void GeneralSettings::loadMiscSettings()
     auto newFolderLimit = cfgFile.newBigFolderSizeLimit();
     _ui->newFolderLimitCheckBox->setChecked(newFolderLimit.first);
     _ui->newFolderLimitSpinBox->setValue(newFolderLimit.second);
+    _ui->existingFolderLimitCheckBox->setEnabled(newFolderLimit.first);
+    _ui->existingFolderLimitCheckBox->setChecked(newFolderLimit.first && cfgFile.notifyExistingFoldersOverLimit());
     _ui->newExternalStorage->setChecked(cfgFile.confirmExternalStorage());
     _ui->monoIconsCheckBox->setChecked(cfgFile.monoIcons());
 }
@@ -270,8 +273,12 @@ void GeneralSettings::slotUpdateInfo()
     }
 
     if (updater) {
-        connect(_ui->updateButton, &QAbstractButton::clicked, this,
-                &GeneralSettings::slotUpdateCheckNow, Qt::UniqueConnection);
+        connect(_ui->updateButton,
+                &QAbstractButton::clicked,
+                this,
+
+                &GeneralSettings::slotUpdateCheckNow,
+                Qt::UniqueConnection);
         connect(_ui->autoCheckForUpdatesCheckBox, &QAbstractButton::toggled, this,
                 &GeneralSettings::slotToggleAutoUpdateCheck, Qt::UniqueConnection);
         _ui->autoCheckForUpdatesCheckBox->setChecked(ConfigFile().autoUpdateCheck());
@@ -406,17 +413,20 @@ void GeneralSettings::slotToggleAutoUpdateCheck()
 
 void GeneralSettings::saveMiscSettings()
 {
-    if (_currentlyLoading)
+    if (_currentlyLoading) {
         return;
-    ConfigFile cfgFile;
-    bool isChecked = _ui->monoIconsCheckBox->isChecked();
-    cfgFile.setMonoIcons(isChecked);
-    Theme::instance()->setSystrayUseMonoIcons(isChecked);
-    cfgFile.setCrashReporter(_ui->crashreporterCheckBox->isChecked());
+    }
 
-    cfgFile.setNewBigFolderSizeLimit(_ui->newFolderLimitCheckBox->isChecked(),
-        _ui->newFolderLimitSpinBox->value());
+    ConfigFile cfgFile;
+
+    const auto useMonoIcons = _ui->monoIconsCheckBox->isChecked();
+    Theme::instance()->setSystrayUseMonoIcons(useMonoIcons);
+
+    cfgFile.setMonoIcons(useMonoIcons);
+    cfgFile.setCrashReporter(_ui->crashreporterCheckBox->isChecked());
+    cfgFile.setNewBigFolderSizeLimit(_ui->newFolderLimitCheckBox->isChecked(), _ui->newFolderLimitSpinBox->value());
     cfgFile.setConfirmExternalStorage(_ui->newExternalStorage->isChecked());
+    cfgFile.setNotifyExistingFoldersOverLimit(_ui->existingFolderLimitCheckBox->isChecked());
 }
 
 void GeneralSettings::slotToggleLaunchOnStartup(bool enable)
