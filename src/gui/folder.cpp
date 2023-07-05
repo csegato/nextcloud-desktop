@@ -1260,6 +1260,7 @@ void Folder::slotExistingFolderNowBig(const QString &folderPath)
         existingFolderNowBigActivity._accName = _accountState->account()->displayName();
         existingFolderNowBigActivity._folder = alias();
         existingFolderNowBigActivity._links = {blacklistActivityLink, whitelistActivityLink};
+        existingFolderNowBigActivity._id = qHash(existingFolderNowBigActivity._file);
 
         const auto user = UserModel::instance()->findUserForAccount(_accountState.data());
         user->slotAddNotification(this, existingFolderNowBigActivity);
