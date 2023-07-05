@@ -834,6 +834,12 @@ void ActivityListModel::slotTriggerAction(const int activityIndex, const int act
                (activity._syncFileItemStatus == SyncFileItem::Conflict || activity._syncFileItemStatus == SyncFileItem::FileNameClash)) {
         slotTriggerDefaultAction(activityIndex);
         return;
+    } else if (action._verb == "WHITELIST_FOLDER" && !activity._folder.isEmpty()) {
+        FolderMan::instance()->whitelistFolderPath(activity._folder);
+        return;
+    } else if (action._verb == "BLACKLIST_FOLDER" && !activity._folder.isEmpty()) {
+        FolderMan::instance()->blacklistFolderPath(activity._folder);
+        return;
     }
 
     emit sendNotificationRequest(activity._accName, action._link, action._verb, activityIndex);
