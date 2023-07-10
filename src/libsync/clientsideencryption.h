@@ -222,6 +222,8 @@ private:
     bool _newMnemonicGenerated = false;
 
     bool isInitialized = false;
+
+    ENGINE *_sslEngine = nullptr;
 };
 
 /* Generates the Metadata for the folder */

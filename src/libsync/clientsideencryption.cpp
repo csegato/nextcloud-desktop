@@ -1,5 +1,7 @@
 #include "clientsideencryption.h"
 
+#define OPENSSL_SUPPRESS_DEPRECATED
+
 #include <openssl/rsa.h>
 #include <openssl/evp.h>
 #include <openssl/pem.h>
@@ -33,6 +35,8 @@
 #include <QScopeGuard>
 #include <QRandomGenerator>
 #include <QCryptographicHash>
+
+#include <openssl/provider.h>
 
 #include <map>
 #include <string>
@@ -874,7 +878,15 @@ QByteArray encryptStringAsymmetric(EVP_PKEY *publicKey, const QByteArray& data) 
 }
 
 
-ClientSideEncryption::ClientSideEncryption() = default;
+ClientSideEncryption::ClientSideEncryption()
+{
+    auto defaultProvider = OSSL_PROVIDER_load(NULL, "default");
+
+    qCInfo(lcCse()) << "loaded provider" << defaultProvider;
+
+    _sslEngine = ENGINE_new();
+    qCInfo(lcCse()) << "ssl engine" << _sslEngine;
+}
 
 const QSslKey &ClientSideEncryption::getPublicKey() const
 {
