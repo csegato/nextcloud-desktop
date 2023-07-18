@@ -7,9 +7,10 @@
 
 #include "syncenginetestutils.h"
 
-#include "syncengine.h"
-#include "propagatorjobs.h"
 #include "caseclashconflictsolver.h"
+#include "configfile.h"
+#include "propagatorjobs.h"
+#include "syncengine.h"
 
 #include <QtTest>
 
@@ -1657,6 +1658,30 @@ private slots:
         fakeFolder.remoteModifier().remove(testLowerCaseFile);
         fakeFolder.remoteModifier().remove(testUpperCaseFile);
         QVERIFY(fakeFolder.syncOnce());
+    }
+
+    void testExistingFolderBecameBig()
+    {
+        constexpr auto testFolder = "folder";
+        constexpr auto testSmallFile = "folder/small_file.txt";
+        constexpr auto testLargeFile = "folder/large_file.txt";
+
+        FakeFolder fakeFolder{FileInfo{}};
+        QSignalSpy spy(&fakeFolder.syncEngine(), &SyncEngine::existingFolderNowBig);
+
+        auto syncOptions = fakeFolder.syncEngine().syncOptions();
+        syncOptions._newBigFolderSizeLimit = 128; // 128 bytes
+        fakeFolder.syncEngine().setSyncOptions(syncOptions);
+
+        fakeFolder.remoteModifier().mkdir(testFolder);
+        fakeFolder.remoteModifier().insert(testSmallFile, 64);
+        fakeFolder.syncEngine().setLocalDiscoveryOptions(OCC::LocalDiscoveryStyle::DatabaseAndFilesystem);
+        QVERIFY(fakeFolder.syncOnce());
+        QCOMPARE(spy.count(), 0);
+
+        fakeFolder.remoteModifier().insert(testLargeFile, 128);
+        QVERIFY(fakeFolder.syncOnce());
+        QCOMPARE(spy.count(), 1);
     }
 };
 
