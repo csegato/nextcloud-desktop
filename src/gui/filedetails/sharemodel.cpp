@@ -280,6 +280,22 @@ void ShareModel::updateData()
         _sharedItemType = fileRecord.isE2eEncrypted() ? SharedItemType::SharedItemTypeEncryptedFile : SharedItemType::SharedItemTypeFile;
     }
 
+    if (_sharedItemType == SharedItemType::SharedItemTypeEncryptedTopLevelFolder &&
+        fileRecord._e2eEncryptionStatus >= SyncJournalFileRecord::EncryptionStatus::EncryptedMigratedV2_0) {
+        int numFoldersInPath = 0;
+        const auto listFoldersInPathCallback = [&numFoldersInPath](const SyncJournalFileRecord &record) {
+            if (record.isValid() && record.isDirectory()) {
+                ++numFoldersInPath;
+            }
+        };
+        const bool listFoldersInPathSucceeded = _folder->journalDb()->listFilesInPath(fileRecord.path().toUtf8(), listFoldersInPathCallback);
+        const auto wasShareDisabledForFolder = _isShareDisabledFolder;
+        _isShareDisabledFolder = listFoldersInPathSucceeded && numFoldersInPath > 0;
+        if (_isShareDisabledFolder != wasShareDisabledForFolder) {
+            emit isShareDisabledFolderChanged();
+        }
+    }
+
     // Will get added when shares are fetched if no link shares are fetched
     _placeholderLinkShare.reset(new Share(_accountState->account(),
                                           placeholderLinkShareId,
@@ -1296,6 +1312,11 @@ bool ShareModel::hasInitialShareFetchCompleted() const
 bool ShareModel::canShare() const
 {
     return _maxSharingPermissions & SharePermissionShare;
+}
+
+bool ShareModel::isShareDisabledFolder() const
+{
+    return _isShareDisabledFolder;
 }
 
 QVariantList ShareModel::sharees() const
