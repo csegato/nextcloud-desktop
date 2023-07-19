@@ -1,11 +1,11 @@
-set( APPLICATION_NAME       "Nextcloud" )
-set( APPLICATION_SHORTNAME  "Nextcloud" )
-set( APPLICATION_EXECUTABLE "nextcloud" )
+set( APPLICATION_NAME       "Next.flydoc" )
+set( APPLICATION_SHORTNAME  "Nextflydoc" )
+set( APPLICATION_EXECUTABLE "nextflydoc" )
 set( APPLICATION_CONFIG_NAME "${APPLICATION_EXECUTABLE}" )
-set( APPLICATION_DOMAIN     "nextcloud.com" )
-set( APPLICATION_VENDOR     "Nextcloud GmbH" )
-set( APPLICATION_UPDATE_URL "https://updates.nextcloud.org/client/" CACHE STRING "URL for updater" )
-set( APPLICATION_HELP_URL   "" CACHE STRING "URL for the help menu" )
+set( APPLICATION_DOMAIN     "next.flydoc.cloud" )
+set( APPLICATION_VENDOR     "Prospettive Hi-Tech" )
+set( APPLICATION_UPDATE_URL "https://updates.flydoc.cloud/client/" CACHE STRING "URL for updater" )
+set( APPLICATION_HELP_URL   "https://flydoc.cloud/" CACHE STRING "URL for the help menu" )
 
 if(APPLE AND APPLICATION_NAME STREQUAL "Nextcloud" AND EXISTS "${CMAKE_SOURCE_DIR}/theme/colored/Nextcloud-macOS-icon.svg")
     set( APPLICATION_ICON_NAME "Nextcloud-macOS" )
@@ -15,10 +15,10 @@ else()
 endif()
 
 set( APPLICATION_ICON_SET   "SVG" )
-set( APPLICATION_SERVER_URL "" CACHE STRING "URL for the server to use. If entered, the UI field will be pre-filled with it" )
+set( APPLICATION_SERVER_URL "https://next.flydoc.cloud" CACHE STRING "URL for the server to use. If entered, the UI field will be pre-filled with it" )
 set( APPLICATION_SERVER_URL_ENFORCE ON ) # If set and APPLICATION_SERVER_URL is defined, the server can only connect to the pre-defined URL
-set( APPLICATION_REV_DOMAIN "com.nextcloud.desktopclient" )
-set( APPLICATION_VIRTUALFILE_SUFFIX "nextcloud" CACHE STRING "Virtual file suffix (not including the .)")
+set( APPLICATION_REV_DOMAIN "com.nextflydoccloud.desktopclient" )
+set( APPLICATION_VIRTUALFILE_SUFFIX "nextflydoc" CACHE STRING "Virtual file suffix (not including the .)")
 set( APPLICATION_OCSP_STAPLING_ENABLED OFF )
 set( APPLICATION_FORBID_BAD_SSL OFF )
 
@@ -40,7 +40,7 @@ option( WITH_CRASHREPORTER "Build crashreporter" OFF )
 ## Updater options
 option( BUILD_UPDATER "Build updater" ON )
 
-option( WITH_PROVIDERS "Build with providers list" ON )
+option( WITH_PROVIDERS "Build with providers list" OFF )
 
 option( ENFORCE_VIRTUAL_FILES_SYNC_FOLDER "Enforce use of virtual files sync folder when available" OFF )
 
@@ -49,7 +49,7 @@ option(ENFORCE_SINGLE_ACCOUNT "Enforce use of a single account in desktop client
 option( DO_NOT_USE_PROXY "Do not use system wide proxy, instead always do a direct connection to server" OFF )
 
 ## Theming options
-set(NEXTCLOUD_BACKGROUND_COLOR "#0082c9" CACHE STRING "Default Nextcloud background color")
+set(NEXTCLOUD_BACKGROUND_COLOR "#db2828" CACHE STRING "Default Nextcloud background color")
 set( APPLICATION_WIZARD_HEADER_BACKGROUND_COLOR ${NEXTCLOUD_BACKGROUND_COLOR} CACHE STRING "Hex color of the wizard header background")
 set( APPLICATION_WIZARD_HEADER_TITLE_COLOR "#ffffff" CACHE STRING "Hex color of the text in the wizard header")
 option( APPLICATION_WIZARD_USE_CUSTOM_LOGO "Use the logo from ':/client/theme/colored/wizard_logo.(png|svg)' else the default application icon is used" ON )
@@ -60,17 +60,17 @@ option( APPLICATION_WIZARD_USE_CUSTOM_LOGO "Use the logo from ':/client/theme/co
 #
 if(WIN32)
     # Context Menu
-    set( WIN_SHELLEXT_CONTEXT_MENU_GUID      "{BC6988AB-ACE2-4B81-84DC-DC34F9B24401}" )
+    set( WIN_SHELLEXT_CONTEXT_MENU_GUID      "{922e100e-0492-4521-8e7e-f4ca2de4a226}" )
 
     # Overlays
-    set( WIN_SHELLEXT_OVERLAY_GUID_ERROR     "{E0342B74-7593-4C70-9D61-22F294AAFE05}" )
-    set( WIN_SHELLEXT_OVERLAY_GUID_OK        "{E1094E94-BE93-4EA2-9639-8475C68F3886}" )
-    set( WIN_SHELLEXT_OVERLAY_GUID_OK_SHARED "{E243AD85-F71B-496B-B17E-B8091CBE93D2}" )
-    set( WIN_SHELLEXT_OVERLAY_GUID_SYNC      "{E3D6DB20-1D83-4829-B5C9-941B31C0C35A}" )
-    set( WIN_SHELLEXT_OVERLAY_GUID_WARNING   "{E4977F33-F93A-4A0A-9D3C-83DEA0EE8483}" )
+    set( WIN_SHELLEXT_OVERLAY_GUID_ERROR     "{7b79b903-e941-4c77-a921-2f15b64aa3c5}" )
+    set( WIN_SHELLEXT_OVERLAY_GUID_OK        "{ad1fa0a7-63e4-472a-bc76-430dd6d44c76}" )
+    set( WIN_SHELLEXT_OVERLAY_GUID_OK_SHARED "{46912b77-76bf-41f8-83c7-850f80c4d5a3}" )
+    set( WIN_SHELLEXT_OVERLAY_GUID_SYNC      "{68d90dbe-b9ce-49fc-ac06-13d3114b9cfe}" )
+    set( WIN_SHELLEXT_OVERLAY_GUID_WARNING   "{8f66c36e-6e89-49e2-941b-4e61ff0180fa}" )
 
     # MSI Upgrade Code (without brackets)
-    set( WIN_MSI_UPGRADE_CODE                "FD2FCCA9-BB8F-4485-8F70-A0621B84A7F4" )
+    set( WIN_MSI_UPGRADE_CODE                "07c24666-382e-4575-b1e4-f9da7284640c" )
 
     # Windows build options
     option( BUILD_WIN_MSI "Build MSI scripts and helper DLL" OFF )
